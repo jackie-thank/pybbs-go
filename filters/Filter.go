@@ -8,12 +8,15 @@ import (
 )
 
 func IsLogin(ctx *context.Context) (bool, models.User) {
-    token, flag := ctx.GetSecureCookie(beego.AppConfig.String("cookie.secure"), beego.AppConfig.String("cookie.token"))
-    var user models.User
-    if flag {
-        flag, user = models.FindUserByToken(token)
-    }
-    return flag, user
+	var user models.User
+
+	username := ctx.Input.CruSession.Get("username")
+	if username == nil {
+		return false, user
+	}
+
+	exist, user := models.FindUserByUserName(username.(string))
+	return exist, user
 }
 
 var HasPermission = func(ctx *context.Context) {
